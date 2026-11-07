@@ -25,7 +25,7 @@ class Router {
         return $this;
     }
 
-    public function prefix(string $prefix, Closure $callback = null): Router {
+    public function prefix(string $prefix, callable $callback): Router {
         $callback($this, $prefix);
         return $this;
     }

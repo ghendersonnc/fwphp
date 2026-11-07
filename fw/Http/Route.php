@@ -20,11 +20,11 @@ class Route {
         $this->middlewares = [];
     }
 
-    public function handle()  {
-        foreach ($this->middlewares as $middleware) {
-            $middleware->handle();
-        }
-
-        return ($this->handler)();
+    public function handle() {
+        array_reduce(array_reverse($this->middlewares),  function ($handler, $middleware) {
+            return function () use ($handler, $middleware) {
+                return $middleware->handle($handler);
+            };
+        }, $this->handler)();
     }
 }
