@@ -36,20 +36,10 @@ class Router {
     }
 
     public function route(): void {
-        $endpoint = explode('?', $_SERVER['REQUEST_URI'])[0];
-        $methods = array_diff(['GET', 'POST', 'PUT', 'DELETE'], [REQUEST->method]);
-        $route = $this->routes[REQUEST->method][$endpoint] ?? null;
+        $route = $this->routes[REQUEST->method][REQUEST->endpoint] ?? null;
 
         if (!$route) {
-
-            foreach ($methods as $method) {
-                $route = $this->routes[$method][$endpoint] ?? null;
-                if ($route) {
-                    http_response_code(405);
-                    die('Method Not Allowed');
-                }
-            }
-
+            $this->tryForMethodNotAllowed();
             http_response_code(404);
             die('Not Found');
         }
@@ -77,5 +67,15 @@ class Router {
         return '/' . $path;
     }
 
+    private function tryForMethodNotAllowed() {
+        $methods = array_diff(['GET', 'POST', 'PUT', 'DELETE'], [REQUEST->method]);
+        foreach ($methods as $method) {
+            $route = $this->routes[$method][REQUEST->endpoint] ?? null;
+            if ($route) {
+                http_response_code(405);
+                die('Method Not Allowed');
+            }
+        }
+    }
 
 }
