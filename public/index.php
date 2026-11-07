@@ -13,12 +13,11 @@ const REQUEST = new Request();
 
 $router = new Router();
 
-
-$router->middleware([new TestMiddleware()])->get('/', [new HomeController(), 'index'])->build();
+$router->get('/', [new HomeController(), 'index'])->build();
 $router->middleware([new TestMiddleware()])->get('/home', [new HomeController(), 'index'])->build();
-$router->get('/random', [new RandomController(), 'index'])->build();
+$router->middleware([new TestMiddleware(), new TestAnotherMiddleware()])->get('/random', [new RandomController(), 'index'])->build();
 
-$router->middleware([new TestMiddleware(), new TestAnotherMiddleware()])->prefix('/post', function (Router $router, string $prefix) {
+$router->middleware([new TestMiddleware()])->prefix('/post', function (Router $router, string $prefix) {
     $router->get($prefix, [new PostController(), 'getHandler']);
     $router->post($prefix, [new PostController(), 'postHandler']);
     $router->put($prefix, [new PostController(), 'putHandler']);
