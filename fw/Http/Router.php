@@ -14,25 +14,39 @@ class Router {
         'PUT' => [],
         'DELETE' => [],
     ];
+    /**
+     * @var array
+     */
+    private array $middlewares = [];
 
-    public function prefix(string $prefix, Closure $callback): void {
+    public function middleware($middlewares = []): Router {
+        $this->middlewares = $middlewares;
+        return $this;
+    }
+
+    public function prefix(string $prefix, Closure $callback = null): Router {
         $callback($this, $prefix);
+        return $this;
     }
 
-    public function get(string $path, $handler, $middlewares = []): Route {
-        return $this->createRoute($path, $handler, 'GET', $middlewares);
+    public function get(string $path, $handler,): Router {
+        $this->createRoute($path, $handler, 'GET');
+        return $this;
     }
 
-    public function post(string $path, $handler, $middlewares = []): Route {
-        return $this->createRoute($path, $handler, 'POST', $middlewares);
+    public function post(string $path, $handler): Router {
+        $this->createRoute($path, $handler, 'POST');
+        return $this;
     }
 
-    public function put(string $path, $handler, $middlewares = []): Route {
-        return $this->createRoute($path, $handler, 'PUT', $middlewares);
+    public function put(string $path, $handler): Router {
+        $this->createRoute($path, $handler, 'PUT');
+        return $this;
     }
 
-    public function delete(string $path, $handler, $middlewares = []): Route {
-        return $this->createRoute($path, $handler, 'DELETE', $middlewares);
+    public function delete(string $path, $handler): Router {
+        $this->createRoute($path, $handler, 'DELETE');
+        return $this;
     }
 
     public function route(): void {
@@ -47,16 +61,15 @@ class Router {
         $route->handle();
     }
 
-    private function createRoute(string $path, $handler, $method, $middlewares): Route {
+    private function createRoute(string $path, $handler, $method): void {
         $path = $this->trimSlashes($path);
 
         $this->routes[$method][$path] = new Route($method, $path, $handler);
 
-        foreach ($middlewares as $middleware) {
+        foreach ($this->middlewares as $middleware) {
             $this->routes[$method][$path]->middlewares[] = $middleware;
         }
 
-        return $this->routes[$method][$path];
     }
 
     private function trimSlashes($path): string {
@@ -67,7 +80,7 @@ class Router {
         return '/' . $path;
     }
 
-    private function tryForMethodNotAllowed() {
+    private function tryForMethodNotAllowed(): void {
         $methods = array_diff(['GET', 'POST', 'PUT', 'DELETE'], [REQUEST->method]);
         foreach ($methods as $method) {
             $route = $this->routes[$method][REQUEST->endpoint] ?? null;
