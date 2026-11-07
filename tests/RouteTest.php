@@ -18,89 +18,23 @@ class RouteTest extends TestCase {
     }
 
     public function test_route_runs_middleware_before_handler_GET() {
-        $events = [];
-        $middleware = new class(function () use (&$events) {
-            $events[] = 'middleware';
-        }) {
-            private $callback;
-
-            public function __construct(callable $callback) {
-                $this->callback = $callback;
-            }
-
-            public function handle(callable $next) {
-                ($this->callback)();
-                $next();
-            }
-        };
-        $handler = function () use (&$events) {
-            $events[] = 'handler';
-            return 'handled';
-        };
-        $route = new Route('GET', '/users', $handler);
-        $route->middlewares[] = $middleware;
-        $route->handle();
-        $this->assertSame([$middleware], $route->middlewares);
-        $this->assertSame(['middleware', 'handler'], $events);
+        $this->assertMiddlewareRunsBeforeHandler('GET');
     }
 
     public function test_route_runs_middleware_before_handler_POST() {
-        $events = [];
-        $middleware = new class(function () use (&$events) {
-            $events[] = 'middleware';
-        }) {
-            private $callback;
-
-            public function __construct(callable $callback) {
-                $this->callback = $callback;
-            }
-
-            public function handle(callable $next) {
-                ($this->callback)();
-                $next();
-            }
-        };
-        $handler = function () use (&$events) {
-            $events[] = 'handler';
-            return 'handled';
-        };
-        $route = new Route('POST', '/users', $handler);
-        $route->middlewares[] = $middleware;
-        $route->handle();
-        $this->assertSame([$middleware], $route->middlewares);
-        $this->assertSame(['middleware', 'handler'], $events);
+        $this->assertMiddlewareRunsBeforeHandler('POST');
     }
 
     public function test_route_runs_middleware_before_handler_PUT() {
-        $events = [];
-        $middleware = new class(function () use (&$events) {
-            $events[] = 'middleware';
-        }) {
-            private $callback;
-
-            public function __construct(callable $callback) {
-                $this->callback = $callback;
-            }
-
-            public function handle(callable $next) {
-                ($this->callback)();
-                $next();
-            }
-        };
-        $handler = function () use (&$events) {
-            $events[] = 'handler';
-            return 'handled';
-        };
-        $route = new Route('PUT', '/users', $handler);
-        $route->middlewares[] = $middleware;
-        $route->handle();
-        $this->assertSame([$middleware], $route->middlewares);
-        $this->assertSame(['middleware', 'handler'], $events);
+        $this->assertMiddlewareRunsBeforeHandler('PUT');
     }
 
     public function test_route_runs_middleware_before_handler_DELETE() {
-        $events = [];
-        $middleware = new class(function () use (&$events) {
+        $this->assertMiddlewareRunsBeforeHandler('DELETE');
+    }
+
+    private function makeMiddleware(array &$events): object {
+        return new class(function () use (&$events) {
             $events[] = 'middleware';
         }) {
             private $callback;
@@ -114,13 +48,23 @@ class RouteTest extends TestCase {
                 $next();
             }
         };
-        $handler = function () use (&$events) {
+    }
+
+    private function makeHandler(array &$events): Closure {
+        return function () use (&$events) {
             $events[] = 'handler';
             return 'handled';
         };
-        $route = new Route('DELETE', '/users', $handler);
+    }
+
+    private function assertMiddlewareRunsBeforeHandler(string $method): void {
+        $events = [];
+        $middleware = $this->makeMiddleware($events);
+
+        $route = new Route($method, '/users', $this->makeHandler($events));
         $route->middlewares[] = $middleware;
         $route->handle();
+
         $this->assertSame([$middleware], $route->middlewares);
         $this->assertSame(['middleware', 'handler'], $events);
     }
