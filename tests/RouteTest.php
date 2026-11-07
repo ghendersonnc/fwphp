@@ -7,7 +7,8 @@ use PHPUnit\Framework\TestCase;
 class RouteTest extends TestCase {
 
     public function test_route_contains_its_parameters_and_handler() {
-        $handler = function() {};
+        $handler = function () {
+        };
         $route = new Route('GET', '/users', $handler);
 
         $this->assertSame('GET', $route->method);
@@ -16,9 +17,9 @@ class RouteTest extends TestCase {
         $this->assertSame([], $route->middlewares);
     }
 
-    public function test_route_runs_middlewares_before_handler_and_returns_handler_result() {
+    public function test_route_runs_middleware_before_handler_GET() {
         $events = [];
-        $middleware = new class(function() use (&$events) {
+        $middleware = new class(function () use (&$events) {
             $events[] = 'middleware';
         }) {
             private $callback;
@@ -32,11 +33,92 @@ class RouteTest extends TestCase {
                 $next();
             }
         };
-        $handler = function() use (&$events) {
+        $handler = function () use (&$events) {
+            $events[] = 'handler';
+            return 'handled';
+        };
+        $route = new Route('GET', '/users', $handler);
+        $route->middlewares[] = $middleware;
+        $route->handle();
+        $this->assertSame([$middleware], $route->middlewares);
+        $this->assertSame(['middleware', 'handler'], $events);
+    }
+
+    public function test_route_runs_middleware_before_handler_POST() {
+        $events = [];
+        $middleware = new class(function () use (&$events) {
+            $events[] = 'middleware';
+        }) {
+            private $callback;
+
+            public function __construct(callable $callback) {
+                $this->callback = $callback;
+            }
+
+            public function handle(callable $next) {
+                ($this->callback)();
+                $next();
+            }
+        };
+        $handler = function () use (&$events) {
             $events[] = 'handler';
             return 'handled';
         };
         $route = new Route('POST', '/users', $handler);
+        $route->middlewares[] = $middleware;
+        $route->handle();
+        $this->assertSame([$middleware], $route->middlewares);
+        $this->assertSame(['middleware', 'handler'], $events);
+    }
+
+    public function test_route_runs_middleware_before_handler_PUT() {
+        $events = [];
+        $middleware = new class(function () use (&$events) {
+            $events[] = 'middleware';
+        }) {
+            private $callback;
+
+            public function __construct(callable $callback) {
+                $this->callback = $callback;
+            }
+
+            public function handle(callable $next) {
+                ($this->callback)();
+                $next();
+            }
+        };
+        $handler = function () use (&$events) {
+            $events[] = 'handler';
+            return 'handled';
+        };
+        $route = new Route('PUT', '/users', $handler);
+        $route->middlewares[] = $middleware;
+        $route->handle();
+        $this->assertSame([$middleware], $route->middlewares);
+        $this->assertSame(['middleware', 'handler'], $events);
+    }
+
+    public function test_route_runs_middleware_before_handler_DELETE() {
+        $events = [];
+        $middleware = new class(function () use (&$events) {
+            $events[] = 'middleware';
+        }) {
+            private $callback;
+
+            public function __construct(callable $callback) {
+                $this->callback = $callback;
+            }
+
+            public function handle(callable $next) {
+                ($this->callback)();
+                $next();
+            }
+        };
+        $handler = function () use (&$events) {
+            $events[] = 'handler';
+            return 'handled';
+        };
+        $route = new Route('DELETE', '/users', $handler);
         $route->middlewares[] = $middleware;
         $route->handle();
         $this->assertSame([$middleware], $route->middlewares);
