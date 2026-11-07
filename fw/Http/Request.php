@@ -3,8 +3,8 @@
 namespace FW\Http;
 
 class Request {
-    public array $get;
-    public array $post;
+    private array $get;
+    private array $post;
     public array $d;
     public string $method;
     public string $endpoint;
@@ -15,19 +15,32 @@ class Request {
         $this->d = [];
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->endpoint = explode('?', $_SERVER['REQUEST_URI'])[0];
-
-        $this->endpoint = rtrim($this->endpoint, '/');
-        $this->endpoint = ltrim($this->endpoint, '/');
-        $this->endpoint = '/' . $this->endpoint;
-
-
-        unset($_GET);
-        unset($_POST);
-        unset($_SERVER['REQUEST_URI']);
-        unset($_SERVER['REQUEST_METHOD']);
+        $this->trimEndpoint();
+        $this->clean();
     }
 
     public function set(string $key, mixed $var): void {
         $this->d[$key] = $var;
+    }
+
+    public function get($key): string|null {
+        return $this->get[$key] ?? null;
+    }
+
+    public function post($key): string|null {
+        return $this->post[$key] ?? null;
+    }
+
+    private function trimEndpoint(): void {
+        $this->endpoint = rtrim($this->endpoint, '/');
+        $this->endpoint = ltrim($this->endpoint, '/');
+        $this->endpoint = '/' . $this->endpoint;
+    }
+
+    private function clean(): void   {
+        unset($_GET);
+        unset($_POST);
+        unset($_SERVER['REQUEST_URI']);
+        unset($_SERVER['REQUEST_METHOD']);
     }
 }
