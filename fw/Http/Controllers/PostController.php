@@ -18,4 +18,8 @@ class PostController {
     public function deleteHandler() {
         echo 'HELLO DELETE';
     }
+
+    public function placeHandler() {
+        echo 'HELLO PLACE';
+    }
 }

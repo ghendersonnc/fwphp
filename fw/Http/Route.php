@@ -21,12 +21,6 @@ class Route {
     }
 
     public function handle()  {
-        if ($this->method !== $_SERVER['REQUEST_METHOD']) {
-            http_response_code(405);
-            die('Method not allowed');
-        }
-
-
         foreach ($this->middlewares as $middleware) {
             $middleware->handle();
         }

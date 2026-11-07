@@ -12,9 +12,13 @@ const REQUEST = new Request();
 
 $router = new Router();
 
-$router->get('/', [new HomeController(), 'index'], [new TestAnotherMiddleware(), new TestMiddleware()]);
-$router->get('/post', [new PostController(), 'getHandler'], [new TestAnotherMiddleware()]);
-$router->post('/post', [new PostController(), 'postHandler']);
-$router->put('/post', [new PostController(), 'putHandler']);
-$router->delete('/post', [new PostController(), 'deleteHandler']);
+
+$router->prefix('/post', function (Router $router, string $prefix) {
+    $router->get($prefix, [new PostController(), 'getHandler']);
+    $router->post($prefix, [new PostController(), 'postHandler']);
+    $router->put($prefix, [new PostController(), 'putHandler']);
+    $router->delete($prefix, [new PostController(), 'deleteHandler']);
+    $router->get($prefix . '/place', [new PostController(), 'placeHandler']);
+});
+
 $router->route();
