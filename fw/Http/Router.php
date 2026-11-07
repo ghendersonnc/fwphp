@@ -87,6 +87,17 @@ class Router {
         $this->middlewares = [];
     }
 
+    public function getRoutes(): array {
+        $routesResult = [];
+        foreach ($this->routes as $method => $routes) {
+            foreach ($routes as $route) {
+                $routesResult[] = $method . ' ' . $route->path;
+            }
+        }
+        return $routesResult;
+    }
+
+
     private function createRoute(string $path, $handler, $method): void {
         $path = $this->trimSlashes($path);
 
