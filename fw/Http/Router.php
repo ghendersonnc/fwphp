@@ -47,6 +47,9 @@ class Router {
     }
 
     public function route(): void {
+        /**
+         * @var Route $route
+         */
         $route = $this->routes[REQUEST->method][REQUEST->endpoint] ?? null;
 
         if (!$route) {
