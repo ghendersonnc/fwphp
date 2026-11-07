@@ -1,6 +1,7 @@
 {
   "require": {
-    "ext-xdebug": "*"
+    "ext-xdebug": "*",
+    "phpunit/phpunit": "^11"
   },
   "autoload": {
     "psr-4": {

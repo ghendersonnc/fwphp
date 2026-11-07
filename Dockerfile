@@ -15,8 +15,10 @@ RUN chmod +x /usr/local/bin/install-php-extensions  \
     && apk add --no-cache $PHPIZE_DEPS \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
-    && addgroup -g ${GID} -S  inventory \
-    && adduser -G inventory -S -D -s /bin/sh -u ${UID} inventory \
-    && sed -i "s/user =n www-data/user = inventory/g" /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i "s/group = www-data/group = inventory/g" /usr/local/etc/php-fpm.d/www.conf \
+    && addgroup -g ${GID} -S  ub \
+    && adduser -G ub -S -D -s /bin/sh -u ${UID} ub \
+    && sed -i "s/user =n www-data/user = ub/g" /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i "s/group = www-data/group = ub/g" /usr/local/etc/php-fpm.d/www.conf \
     && composer install
+
+USER ub
