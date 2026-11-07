@@ -14,8 +14,9 @@ const REQUEST = new Request();
 $router = new Router();
 
 
-$router->middleware([new TestMiddleware()])->get('/', [new HomeController(), 'index']);
-$router->middleware([new TestAnotherMiddleware()])->get('/random', [new RandomController(), 'index']);
+$router->middleware([new TestMiddleware()])->get('/', [new HomeController(), 'index'])->build();
+$router->middleware([new TestMiddleware()])->get('/home', [new HomeController(), 'index'])->build();
+$router->get('/random', [new RandomController(), 'index'])->build();
 
 $router->middleware([new TestMiddleware(), new TestAnotherMiddleware()])->prefix('/post', function (Router $router, string $prefix) {
     $router->get($prefix, [new PostController(), 'getHandler']);
@@ -23,6 +24,6 @@ $router->middleware([new TestMiddleware(), new TestAnotherMiddleware()])->prefix
     $router->put($prefix, [new PostController(), 'putHandler']);
     $router->delete($prefix, [new PostController(), 'deleteHandler']);
     $router->get($prefix . '/place', [new PostController(), 'placeHandler']);
-});
+})->build();
 
 $router->route();

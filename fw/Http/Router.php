@@ -18,6 +18,7 @@ class Router {
      * @var array
      */
     private array $middlewares = [];
+    private array $routesToBuild = [];
 
     public function middleware($middlewares = []): Router {
         $this->middlewares = $middlewares;
@@ -29,23 +30,39 @@ class Router {
         return $this;
     }
 
-    public function get(string $path, $handler,): Router {
-        $this->createRoute($path, $handler, 'GET');
+    public function get(string $path, $handler): Router {
+        $this->routesToBuild[] = [
+            'path' => $path,
+            'handler' => $handler,
+            'method' => 'GET'
+        ];
         return $this;
     }
 
     public function post(string $path, $handler): Router {
-        $this->createRoute($path, $handler, 'POST');
+        $this->routesToBuild[] = [
+            'path' => $path,
+            'handler' => $handler,
+            'method' => 'POST'
+        ];
         return $this;
     }
 
     public function put(string $path, $handler): Router {
-        $this->createRoute($path, $handler, 'PUT');
+        $this->routesToBuild[] = [
+            'path' => $path,
+            'handler' => $handler,
+            'method' => 'PUT'
+        ];
         return $this;
     }
 
     public function delete(string $path, $handler): Router {
-        $this->createRoute($path, $handler, 'DELETE');
+        $this->routesToBuild[] = [
+            'path' => $path,
+            'handler' => $handler,
+            'method' => 'DELETE'
+        ];
         return $this;
     }
 
@@ -61,15 +78,21 @@ class Router {
         $route->handle();
     }
 
+    public function build(): void {
+        foreach ($this->routesToBuild as $route) {
+            $this->createRoute($route['path'], $route['handler'], $route['method']);
+        }
+
+        $this->routesToBuild = [];
+        $this->middlewares = [];
+    }
+
     private function createRoute(string $path, $handler, $method): void {
         $path = $this->trimSlashes($path);
 
         $this->routes[$method][$path] = new Route($method, $path, $handler);
 
-        foreach ($this->middlewares as $middleware) {
-            $this->routes[$method][$path]->middlewares[] = $middleware;
-        }
-
+        $this->routes[$method][$path]->middlewares = $this->middlewares;
     }
 
     private function trimSlashes($path): string {
