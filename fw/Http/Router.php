@@ -31,39 +31,19 @@ class Router {
     }
 
     public function get(string $path, $handler): Router {
-        $this->routesToBuild[] = [
-            'path' => $path,
-            'handler' => $handler,
-            'method' => 'GET'
-        ];
-        return $this;
+        return $this->addRoute('GET', $path, $handler);
     }
 
     public function post(string $path, $handler): Router {
-        $this->routesToBuild[] = [
-            'path' => $path,
-            'handler' => $handler,
-            'method' => 'POST'
-        ];
-        return $this;
+        return $this->addRoute('POST', $path, $handler);
     }
 
     public function put(string $path, $handler): Router {
-        $this->routesToBuild[] = [
-            'path' => $path,
-            'handler' => $handler,
-            'method' => 'PUT'
-        ];
-        return $this;
+        return $this->addRoute('PUT', $path, $handler);
     }
 
     public function delete(string $path, $handler): Router {
-        $this->routesToBuild[] = [
-            'path' => $path,
-            'handler' => $handler,
-            'method' => 'DELETE'
-        ];
-        return $this;
+        return $this->addRoute('DELETE', $path, $handler);
     }
 
     public function route(): void {
@@ -104,6 +84,15 @@ class Router {
         $this->routes[$method][$path] = new Route($method, $path, $handler);
 
         $this->routes[$method][$path]->middlewares = $this->middlewares;
+    }
+
+    private function addRoute(string $method, string $path, $handler): Router {
+        $this->routesToBuild[] = [
+            'path' => $path,
+            'handler' => $handler,
+            'method' => $method
+        ];
+        return $this;
     }
 
     private function trimSlashes($path): string {
