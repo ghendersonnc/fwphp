@@ -3,23 +3,23 @@
 namespace FW\Http\Controllers;
 
 class PostController {
-    public function getHandler() {
+    public function getHandler(): void {
         echo 'HELLO GET';
     }
 
-    public function postHandler() {
+    public function postHandler(): void {
         echo 'HELLO POST';
     }
 
-    public function putHandler() {
+    public function putHandler(): void {
         echo 'HELLO PUT';
     }
 
-    public function deleteHandler() {
+    public function deleteHandler(): void {
         echo 'HELLO DELETE';
     }
 
-    public function placeHandler() {
+    public function placeHandler(): void {
         echo 'HELLO PLACE';
     }
 }
