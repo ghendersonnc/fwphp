@@ -3,6 +3,9 @@
     "ext-xdebug": "*",
     "phpunit/phpunit": "^11"
   },
+  "require-dev": {
+    "rector/rector": "^2.8.4"
+  },
   "autoload": {
     "psr-4": {
       "FW\\": "fw/"
